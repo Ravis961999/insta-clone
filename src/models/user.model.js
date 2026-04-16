@@ -23,3 +23,4 @@ const userschema=new mongoose.Schema({
 })
 
 const usermodel=mongoose.model("user",userschema)
+module.exports=usermodel
