@@ -1,6 +1,7 @@
 const usermodel=require("../models/user.model")
 const crypto=require("crypto")
 const jwt=require("jsonwebtoken")
+const bcrypt=require("bcryptjs")
 
 
 
@@ -19,7 +20,8 @@ const jwt=require("jsonwebtoken")
         return res.status(409).json({message:userexists.username===username?"username already exist":"email already exist"})
     }
 
-    const hashpassword= crypto.createHash("md5").update(password).digest("hex")
+    // const hashpassword= crypto.createHash("md5").update(password).digest("hex")
+    const hashpassword=await bcrypt.hash(password,10)
 
     const user = await usermodel.create({
         username,email,password:hashpassword,bio,profile_image
@@ -34,7 +36,12 @@ const jwt=require("jsonwebtoken")
 
     res.status(201).json(
         {message:"user created successfully",
-            user,
+            user:{
+                username:user.username,
+                email:user.email,
+                profile:user.profile_image,
+                bio:user.bio
+            },
             token
         }
     )
@@ -55,9 +62,10 @@ const jwt=require("jsonwebtoken")
     if(!user){
         return res.status(404).json({message:username?"username not found":"email not found"})
     }
-    const hashpassword=crypto.createHash("md5").update(password).digest("hex")
+    // const hashpassword=crypto.createHash("md5").update(password).digest("hex")
+    const ispasswordcorrect = await bcrypt.compare(password,user.password)
 
-    if(user.password!==hashpassword){
+    if(!ispasswordcorrect){
         return res.status(401).json({message:"invalid password"})
     }
 
@@ -76,7 +84,6 @@ const jwt=require("jsonwebtoken")
                 email:user.email,
                 profile:user.profile_image,
                 bio:user.bio,
-
 
             }
             
