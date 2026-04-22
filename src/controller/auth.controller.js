@@ -29,7 +29,7 @@ const bcrypt=require("bcryptjs")
 
     const token= jwt.sign({
         id:user._id,
-        email:user.email
+        user:user.username
     },process.env.JWT_SECRET,{expiresIn:"1d"})
 
     res.cookie("jwt_token",token)
@@ -71,7 +71,7 @@ const bcrypt=require("bcryptjs")
 
     const token=jwt.sign({
         id:user._id,
-        email:user.email
+        username:user.username
     },process.env.JWT_SECRET,{expiresIn:"1d"})
 
     res.cookie("jwt_token",token)
